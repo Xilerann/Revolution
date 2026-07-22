@@ -1,0 +1,496 @@
+/*
+  Jetons de thème repris tels quels de shadcn/ui (thème "default", palette
+  neutre, https://ui.shadcn.com/docs/theming) : mêmes valeurs oklch, même
+  échelle de rayons. Implémenté en CSS simple (pas de Tailwind/Radix/React) —
+  Revolution reste un binaire Go qui sert une page statique sans étape de
+  build front, mais le rendu visuel reproduit fidèlement les composants
+  shadcn (Button, Input, Card, Badge, Avatar) pertinents pour cette page.
+*/
+:root {
+	color-scheme: light;
+	--background: oklch(1 0 0);
+	--foreground: oklch(0.145 0 0);
+	--card: oklch(1 0 0);
+	--card-foreground: oklch(0.145 0 0);
+	--primary: oklch(0.205 0 0);
+	--primary-foreground: oklch(0.985 0 0);
+	--secondary: oklch(0.97 0 0);
+	--secondary-foreground: oklch(0.205 0 0);
+	--muted: oklch(0.97 0 0);
+	--muted-foreground: oklch(0.556 0 0);
+	--accent: oklch(0.97 0 0);
+	--accent-foreground: oklch(0.205 0 0);
+	--destructive: oklch(0.577 0.245 27.325);
+	--border: oklch(0.922 0 0);
+	--input: oklch(0.922 0 0);
+	--ring: oklch(0.708 0 0);
+
+	--radius: 0.625rem;
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+
+	--font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+		"Helvetica Neue", Arial, "Noto Sans", sans-serif;
+	--font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono",
+		Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		color-scheme: dark;
+		--background: oklch(0.145 0 0);
+		--foreground: oklch(0.985 0 0);
+		--card: oklch(0.205 0 0);
+		--card-foreground: oklch(0.985 0 0);
+		--primary: oklch(0.922 0 0);
+		--primary-foreground: oklch(0.205 0 0);
+		--secondary: oklch(0.269 0 0);
+		--secondary-foreground: oklch(0.985 0 0);
+		--muted: oklch(0.269 0 0);
+		--muted-foreground: oklch(0.708 0 0);
+		--accent: oklch(0.269 0 0);
+		--accent-foreground: oklch(0.985 0 0);
+		--destructive: oklch(0.704 0.191 22.216);
+		--border: oklch(1 0 0 / 10%);
+		--input: oklch(1 0 0 / 15%);
+		--ring: oklch(0.556 0 0);
+	}
+}
+
+* { box-sizing: border-box; }
+::selection { background: var(--primary); color: var(--primary-foreground); }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+	margin: 0;
+	overflow-x: hidden;
+	font-family: var(--font-sans);
+	font-size: 0.875rem;
+	line-height: 1.5;
+	background: var(--background);
+	color: var(--foreground);
+	-webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+
+:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 50%, transparent);
+	border-radius: var(--radius-sm);
+}
+
+.container {
+	max-width: 56rem;
+	margin: 0 auto;
+	padding: 0 1.5rem;
+}
+
+/* Le tableau de résultats profite de toute la largeur de la fenêtre (plus de
+   colonnes lisibles d'un coup) ; les pages de contenu (fiche torrent,
+   maintenance) restent sur une colonne de lecture confortable via .container. */
+.container-wide {
+	max-width: 100%;
+	margin: 0 auto;
+	padding: 0 1.5rem;
+}
+
+/* ---------- En-tête ---------- */
+/* Pas de bandeau séparé (sticky/bordé) : la marque et la recherche vivent
+   directement dans le flux de la page, comme le reste du contenu. */
+
+.page-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 2rem;
+	padding: 2rem 0;
+	flex-wrap: wrap;
+}
+
+.page-head-row {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+}
+
+.page-head-controls {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 1rem;
+	flex: 1 1 16rem;
+	min-width: 0;
+}
+
+.hero-logo {
+	max-height: 280px;
+	width: auto;
+	max-width: 45%;
+	object-fit: contain;
+	flex-shrink: 0;
+	/* Le dessin (noir + contour blanc partiel) se lit bien sur fond clair
+	   tel quel ; en thème sombre le remplissage noir se fondrait dans la
+	   page, donc on ajoute un liseré blanc en CSS (silhouette complète). */
+}
+@media (prefers-color-scheme: dark) {
+	.hero-logo {
+		filter:
+			drop-shadow(1.5px 0 0 #fff)
+			drop-shadow(-1.5px 0 0 #fff)
+			drop-shadow(0 1.5px 0 #fff)
+			drop-shadow(0 -1.5px 0 #fff)
+			drop-shadow(1.1px 1.1px 0 #fff)
+			drop-shadow(-1.1px 1.1px 0 #fff)
+			drop-shadow(1.1px -1.1px 0 #fff)
+			drop-shadow(-1.1px -1.1px 0 #fff);
+	}
+}
+.hero-logo-small { max-height: 110px; }
+
+.page-head-centered { display: flex; justify-content: center; padding: 2rem 0 1rem; }
+
+@media (max-width: 40rem) {
+	.page-head { justify-content: center; text-align: center; }
+	.page-head-controls { align-items: center; }
+	.hero-logo { max-width: 60%; margin: 0 auto; }
+}
+
+.brand {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.5rem;
+	font-size: 1.125rem;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	white-space: nowrap;
+}
+
+.search-form { display: flex; gap: 0.5rem; flex: 1; min-width: 0; max-width: 28rem; width: 100%; }
+
+/* ---------- Primitives shadcn ---------- */
+
+.input {
+	flex: 1;
+	min-width: 0;
+	height: 2.25rem;
+	padding: 0 0.75rem;
+	font-size: 0.875rem;
+	font-family: inherit;
+	color: var(--foreground);
+	background: var(--background);
+	border: 1px solid var(--input);
+	border-radius: var(--radius-md);
+	box-shadow: 0 1px 2px 0 color-mix(in oklch, var(--foreground) 3%, transparent);
+	transition: box-shadow 0.15s, border-color 0.15s;
+}
+.input::placeholder { color: var(--muted-foreground); }
+.input:focus-visible { border-color: var(--ring); }
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+	height: 2.25rem;
+	padding: 0 1rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	font-family: inherit;
+	white-space: nowrap;
+	border-radius: var(--radius-md);
+	border: 1px solid transparent;
+	cursor: pointer;
+	background: var(--primary);
+	color: var(--primary-foreground);
+	box-shadow: 0 1px 2px 0 color-mix(in oklch, var(--foreground) 3%, transparent);
+	transition: background-color 0.15s, opacity 0.15s;
+}
+.btn:hover { background: color-mix(in oklch, var(--primary) 90%, var(--background)); }
+
+.btn-outline {
+	background: transparent;
+	color: var(--foreground);
+	border-color: var(--border);
+	box-shadow: none;
+}
+.btn-outline:hover { background: var(--accent); color: var(--accent-foreground); }
+
+.btn-lg { height: 2.75rem; padding: 0 1.5rem; font-size: 0.9375rem; }
+.btn-sm { height: 1.75rem; padding: 0 0.65rem; font-size: 0.75rem; }
+
+.card {
+	background: var(--card);
+	color: var(--card-foreground);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-xl);
+	box-shadow: 0 1px 3px 0 color-mix(in oklch, var(--foreground) 4%, transparent);
+}
+
+.badge {
+	display: inline-flex;
+	align-items: center;
+	height: 1.25rem;
+	padding: 0 0.5rem;
+	border-radius: var(--radius-md);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	line-height: 1;
+	white-space: nowrap;
+	background: var(--secondary);
+	color: var(--secondary-foreground);
+	border: 1px solid transparent;
+}
+.badge-outline {
+	background: transparent;
+	border-color: var(--border);
+	color: var(--muted-foreground);
+}
+
+.avatar {
+	width: 1.25rem;
+	height: 1.25rem;
+	border-radius: 999px;
+	object-fit: cover;
+	vertical-align: middle;
+	border: 1px solid var(--border);
+}
+
+.mono {
+	font-family: var(--font-mono);
+	font-size: 0.8125rem;
+	background: var(--muted);
+	color: var(--foreground);
+	padding: 0.1rem 0.4rem;
+	border-radius: var(--radius-sm);
+	word-break: break-all;
+}
+
+.separator { height: 1px; background: var(--border); border: none; margin: 1.5rem 0; }
+
+.text-muted { color: var(--muted-foreground); }
+
+/* ---------- Page ---------- */
+
+main { padding: 0 0 4rem; }
+
+.page-title {
+	font-size: 1.125rem;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	margin: 0 0 1rem;
+}
+
+:root {
+	--seed-color: #16803d;
+	--leech-color: #c0271f;
+}
+@media (prefers-color-scheme: dark) {
+	:root {
+		--seed-color: #4ade80;
+		--leech-color: #f87171;
+	}
+}
+
+.table-wrap {
+	width: 100%;
+	overflow-x: auto;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+}
+
+.results-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.8125rem;
+	white-space: nowrap;
+}
+.results-table th, .results-table td {
+	padding: 0.55rem 0.9rem;
+	text-align: left;
+}
+.results-table thead th {
+	background: var(--muted);
+	color: var(--muted-foreground);
+	font-weight: 600;
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	border-bottom: 1px solid var(--border);
+}
+.results-table tbody tr { border-bottom: 1px solid var(--border); transition: background-color 0.15s; }
+.results-table tbody tr:last-child { border-bottom: none; }
+.results-table tbody tr:hover { background: var(--accent); }
+.results-table td.col-title { white-space: normal; min-width: 14rem; }
+.results-table th.col-stat, .results-table td.col-stat { text-align: right; white-space: nowrap; }
+
+.result-link {
+	color: var(--foreground);
+	font-weight: 500;
+	text-decoration: none;
+}
+.result-link:hover { text-decoration: underline; }
+
+.seed-stat, .leech-stat { display: inline-flex; align-items: center; gap: 0.3em; font-variant-numeric: tabular-nums; }
+.seed-stat { color: var(--seed-color); }
+.leech-stat { color: var(--leech-color); }
+
+.pager { display: flex; justify-content: space-between; margin-top: 1.25rem; gap: 0.75rem; }
+
+.empty-state {
+	text-align: center;
+	padding: 3.5rem 1.5rem;
+	color: var(--muted-foreground);
+}
+.empty-state strong { display: block; color: var(--foreground); font-size: 1rem; margin-bottom: 0.35rem; }
+
+/* ---------- Fiche torrent ---------- */
+
+.torrent-card { padding: 1.75rem; }
+
+.torrent-detail h1.page-title { font-size: 1.375rem; margin-bottom: 0.6rem; }
+
+.torrent-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.6rem;
+	align-items: center;
+	color: var(--muted-foreground);
+	font-size: 0.8125rem;
+	margin-bottom: 1.25rem;
+}
+.torrent-meta .divider { color: var(--border); }
+.torrent-meta .publisher { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--foreground); }
+
+.torrent-image {
+	display: block;
+	max-width: 100%;
+	max-height: 22rem;
+	object-fit: cover;
+	border-radius: var(--radius-lg);
+	border: 1px solid var(--border);
+	margin-bottom: 1.25rem;
+}
+
+.download-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+.hint { color: var(--muted-foreground); font-size: 0.8125rem; margin: 0 0 1.5rem; }
+
+.infohash-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.infohash-row .label { color: var(--muted-foreground); font-size: 0.75rem; }
+
+/* Rendu du Markdown (goldmark + sanitisation bluemonday) — voir
+   internal/web/markdown.go. Styles "prose" minimaux pour les éléments que
+   la sanitisation autorise (titres, listes, citations, code, images, tables). */
+.description {
+	color: var(--foreground);
+	line-height: 1.65;
+	margin: 0 0 1.5rem;
+	overflow-wrap: break-word;
+}
+.description > *:first-child { margin-top: 0; }
+.description > *:last-child { margin-bottom: 0; }
+.description p { margin: 0 0 1em; }
+.description h1, .description h2, .description h3,
+.description h4, .description h5, .description h6 {
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.3;
+	margin: 1.4em 0 0.6em;
+}
+.description h1 { font-size: 1.3rem; }
+.description h2 { font-size: 1.15rem; }
+.description h3 { font-size: 1.05rem; }
+.description ul, .description ol { margin: 0 0 1em; padding-left: 1.4em; }
+.description li { margin: 0.25em 0; }
+.description li > p { margin: 0; }
+.description a { color: var(--foreground); text-decoration: underline; text-underline-offset: 2px; }
+.description strong { font-weight: 600; }
+.description blockquote {
+	margin: 0 0 1em;
+	padding: 0.1rem 1rem;
+	border-left: 3px solid var(--border);
+	color: var(--muted-foreground);
+}
+.description code {
+	font-family: var(--font-mono);
+	font-size: 0.85em;
+	background: var(--muted);
+	padding: 0.15em 0.4em;
+	border-radius: var(--radius-sm);
+}
+.description pre {
+	background: var(--muted);
+	padding: 0.9rem 1rem;
+	border-radius: var(--radius-md);
+	overflow-x: auto;
+	margin: 0 0 1em;
+}
+.description pre code { background: none; padding: 0; }
+.description img {
+	max-width: 100%;
+	border-radius: var(--radius-md);
+	border: 1px solid var(--border);
+	margin: 0.5em 0;
+}
+.description hr { border: none; border-top: 1px solid var(--border); margin: 1.5em 0; }
+.description table { border-collapse: collapse; width: 100%; margin: 0 0 1em; font-size: 0.9em; }
+.description th, .description td { border: 1px solid var(--border); padding: 0.4em 0.6em; text-align: left; }
+.description th { background: var(--muted); font-weight: 600; }
+
+.section-heading {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	color: var(--muted-foreground);
+	margin: 0 0 0.6rem;
+}
+
+.file-list { list-style: none; padding: 0; margin: 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.file-list li {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.55rem 0.9rem;
+	font-size: 0.8125rem;
+	border-bottom: 1px solid var(--border);
+}
+.file-list li:last-child { border-bottom: none; }
+.file-list .file-path { font-family: var(--font-mono); word-break: break-all; min-width: 0; }
+.file-list .file-size { color: var(--muted-foreground); white-space: nowrap; }
+
+/* ---------- Maintenance ---------- */
+
+.maintenance-card {
+	max-width: 26rem;
+	margin: 1rem auto 0;
+	padding: 2.5rem 2rem;
+	text-align: center;
+}
+.maintenance-card .page-title { margin-bottom: 0.5rem; }
+
+/* ---------- Pied de page ---------- */
+
+footer {
+	border-top: 1px solid var(--border);
+	padding: 1.25rem;
+	color: var(--muted-foreground);
+	font-size: 0.75rem;
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	flex-wrap: wrap;
+}
+footer .container { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; padding: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+	* { transition: none !important; }
+}
+
+@media (max-width: 32rem) {
+	.torrent-card { padding: 1.25rem; }
+	.download-row .btn-lg { width: 100%; }
+}

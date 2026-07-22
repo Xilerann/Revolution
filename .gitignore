@@ -1,0 +1,11 @@
+/bin/
+/config.yaml
+/revolution.db
+/revolution.db-*
+/revolution.pid
+/revolution.log
+.claude/
+
+# Données du seeder de démonstration (fichiers réels générés localement pour
+# le torrent de démo, pas du code — voir README pour le contexte).
+/seed/

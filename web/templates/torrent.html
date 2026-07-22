@@ -1,0 +1,75 @@
+{{define "torrent.html"}}
+<!doctype html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{.Torrent.Title}} — {{.SiteName}}</title>
+	<link rel="stylesheet" href="/static/style.css">
+	<link rel="icon" href="/static/logo.png?v=4" type="image/png">
+</head>
+<body>
+	<main class="container torrent-detail">
+		<div class="page-head">
+			<div class="page-head-controls">
+				<a class="brand" href="/">{{.SiteName}}</a>
+				<form class="search-form" action="/" method="get">
+					<input class="input" type="text" name="q" placeholder="Rechercher un torrent…">
+					<button class="btn" type="submit">Rechercher</button>
+				</form>
+			</div>
+			<img class="hero-logo hero-logo-small" src="/static/logo.png?v=4" alt="{{.SiteName}}">
+		</div>
+
+		<div class="card torrent-card">
+			<h1 class="page-title">{{.Torrent.Title}}</h1>
+
+			<div class="torrent-meta">
+				<span class="publisher">
+					{{if .PublisherPicture}}<img class="avatar" src="{{.PublisherPicture}}" alt="">{{end}}
+					{{if .PublisherNpub}}<a href="https://njump.me/{{.PublisherNpub}}" rel="noopener">{{.PublisherName}}</a>{{else}}{{.PublisherName}}{{end}}
+				</span>
+				<span class="divider">·</span>
+				<span>{{fmtTime .Torrent.PublishedAt}}</span>
+				<span class="divider">·</span>
+				<span>{{humanSize .Torrent.SizeBytes}}</span>
+				{{if .StatsAvailable}}
+				<span class="divider">·</span>
+				<span class="seed-stat" title="seeders">▲ {{.Seeders}}</span>
+				<span class="leech-stat" title="leechers">▼ {{.Leechers}}</span>
+				{{end}}
+			</div>
+
+			<div class="download-row">
+				<a class="btn btn-lg" href="{{.MagnetURL}}">Télécharger (lien magnet)</a>
+			</div>
+
+			<hr class="separator">
+
+			{{if .Torrent.ImageURL}}
+				<img class="torrent-image" src="{{.Torrent.ImageURL}}" alt="">
+			{{end}}
+
+			<div class="infohash-row">
+				<span class="label">Infohash</span>
+				<code class="mono">{{.Torrent.InfoHash}}</code>
+			</div>
+
+			<div class="description">{{.DescriptionHTML}}</div>
+
+			{{if .Torrent.Files}}
+			<p class="section-heading">Fichiers</p>
+			<ul class="file-list">
+				{{range .Torrent.Files}}
+				<li>
+					<span class="file-path">{{.Path}}</span>
+					<span class="file-size">{{humanSize .SizeBytes}}</span>
+				</li>
+				{{end}}
+			</ul>
+			{{end}}
+		</div>
+	</main>
+</body>
+</html>
+{{end}}

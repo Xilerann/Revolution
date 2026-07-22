@@ -1,0 +1,23 @@
+{{define "maintenance.html"}}
+<!doctype html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Maintenance — {{.SiteName}}</title>
+	<link rel="stylesheet" href="/static/style.css">
+	<link rel="icon" href="/static/logo.png?v=4" type="image/png">
+</head>
+<body>
+	<main class="container">
+		<div class="page-head-centered">
+			<img class="hero-logo hero-logo-small" src="/static/logo.png?v=4" alt="{{.SiteName}}">
+		</div>
+		<div class="card maintenance-card">
+			<h1 class="page-title">{{.SiteName}} est en maintenance</h1>
+			<p class="text-muted">Cette instance revient bientôt. Merci de votre patience.</p>
+		</div>
+	</main>
+</body>
+</html>
+{{end}}

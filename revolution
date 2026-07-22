@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Point d'entrée unique de Revolution : compile le binaire si le code source a
+# changé depuis la dernière compilation, puis exécute la commande demandée.
+# Usage : ./revolution <commande> [options]   (voir `./revolution help`)
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$ROOT"
+
+BIN_DIR="$ROOT/bin"
+BIN="$BIN_DIR/revolution"
+HASH_FILE="$BIN_DIR/.src.sha256"
+mkdir -p "$BIN_DIR"
+
+src_hash() {
+	# Doit couvrir tout ce qui influence le binaire produit, y compris les
+	# fichiers embarqués via go:embed (web/templates, web/static) : un simple
+	# changement de CSS/HTML ne touche aucun *.go et serait sinon ignoré.
+	find "$ROOT" \( -name '*.go' -o -name 'go.mod' -o -name 'go.sum' \
+		-o -path "$ROOT/web/templates/*" -o -path "$ROOT/web/static/*" \) \
+		-not -path "$BIN_DIR/*" \
+		| LC_ALL=C sort | xargs -r sha256sum | sha256sum | awk '{print $1}'
+}
+
+current_hash="$(src_hash)"
+need_build=1
+if [[ -x "$BIN" && -f "$HASH_FILE" && "$(cat "$HASH_FILE")" == "$current_hash" ]]; then
+	need_build=0
+fi
+
+if [[ "$need_build" == "1" ]]; then
+	echo "[revolution] compilation…" >&2
+	( cd "$ROOT" && go build -trimpath -ldflags="-s -w" -o "$BIN" ./cmd/revolution )
+	echo "$current_hash" > "$HASH_FILE"
+fi
+
+exec "$BIN" "$@"

@@ -1,0 +1,75 @@
+{{define "search.html"}}
+<!doctype html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{.SiteName}}</title>
+	<link rel="stylesheet" href="/static/style.css">
+	<link rel="icon" href="/static/logo.png?v=4" type="image/png">
+	{{if .RSSEnabled}}<link rel="alternate" type="application/rss+xml" title="{{.SiteName}} — derniers torrents" href="/rss.xml">{{end}}
+</head>
+<body>
+	<main class="container-wide">
+		<div class="page-head">
+			<div class="page-head-controls">
+				<div class="page-head-row">
+					<a class="brand" href="/">{{.SiteName}}</a>
+					{{if .RSSEnabled}}<a class="btn btn-outline btn-sm" href="/rss.xml" title="Flux RSS des derniers torrents">RSS</a>{{end}}
+				</div>
+				<form class="search-form" action="/" method="get">
+					<input class="input" type="text" name="q" value="{{.Query}}" placeholder="Rechercher un torrent…" autofocus>
+					<button class="btn" type="submit">Rechercher</button>
+				</form>
+			</div>
+			<img class="hero-logo" src="/static/logo.png?v=4" alt="{{.SiteName}}">
+		</div>
+
+		{{if .Results}}
+			<div class="table-wrap">
+				<table class="results-table">
+					<thead>
+						<tr>
+							<th class="col-title">Titre</th>
+							<th>Catégorie</th>
+							<th>Publicateur</th>
+							<th>Date</th>
+							<th>Taille</th>
+							<th class="col-stat">Seed</th>
+							<th class="col-stat">Leech</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{range .Results}}
+						<tr>
+							<td class="col-title"><a class="result-link" href="/t/{{.ID}}">{{.Title}}</a></td>
+							<td>{{if .Category}}<span class="badge">{{.Category}}</span>{{end}}</td>
+							<td class="text-muted">{{.PublisherLabel}}</td>
+							<td class="text-muted">{{fmtTime .PublishedAt}}</td>
+							<td class="text-muted">{{humanSize .SizeBytes}}</td>
+							<td class="col-stat">{{if .HasStats}}<span class="seed-stat">▲ {{.Seeders}}</span>{{end}}</td>
+							<td class="col-stat">{{if .HasStats}}<span class="leech-stat">▼ {{.Leechers}}</span>{{end}}</td>
+						</tr>
+						{{end}}
+					</tbody>
+				</table>
+			</div>
+			<nav class="pager">
+				{{if gt .Page 0}}<a class="btn btn-outline" href="/?q={{.Query}}&page={{.PrevPage}}">← Précédent</a>{{else}}<span></span>{{end}}
+				{{if .HasMore}}<a class="btn btn-outline" href="/?q={{.Query}}&page={{.NextPage}}">Suivant →</a>{{end}}
+			</nav>
+		{{else}}
+			<div class="card empty-state">
+				{{if .Query}}
+					<strong>Aucun résultat pour « {{.Query}} »</strong>
+					Essayez un autre titre, ou vérifiez l'orthographe.
+				{{else}}
+					<strong>Le catalogue est vide pour l'instant</strong>
+					Le modérateur de cette instance n'a pas encore ajouté de comptes suivis, ou la synchronisation est en cours.
+				{{end}}
+			</div>
+		{{end}}
+	</main>
+</body>
+</html>
+{{end}}

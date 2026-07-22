@@ -1,0 +1,46 @@
+# Configuration de cette instance Revolution.
+# Copiez ce fichier en config.yaml puis ajustez-le (voir README.md).
+
+# Adresse d'écoute du site web public. Reste volontairement en 127.0.0.1 :
+# c'est au modérateur de mettre son propre reverse proxy (nginx, Caddy...) et
+# de gérer nom de domaine / TLS devant. Revolution ne fait pas ça lui-même.
+listen_addr: "127.0.0.1:8420"
+
+# Fichier SQLite du catalogue (torrents, profils, comptes suivis, relais).
+db_path: "revolution.db"
+
+# Affiché en en-tête du site.
+site_name: "Revolution"
+
+# Le mécanisme principal de mise à jour du catalogue est une souscription
+# Nostr permanente (le relai pousse les nouveaux événements dès leur
+# publication). Cet intervalle contrôle seulement la fréquence à laquelle la
+# liste des comptes suivis/relais est relue en base pour reconfigurer cette
+# souscription si vous avez changé `follow`/`relay` pendant que ça tourne.
+live_refresh_minutes: 5
+
+# Filet de sécurité : intervalle entre deux resynchronisations complètes par
+# lot de tous les comptes suivis, pour rattraper ce que la souscription live
+# aurait manqué (coupure réseau, relai temporairement indisponible...).
+# Volontairement large : ce n'est pas le mécanisme principal, un sondage
+# fréquent solliciterait inutilement les relais.
+reconcile_interval_minutes: 30
+
+# Délai maximum accordé à chaque requête faite à un relai Nostr.
+request_timeout_seconds: 10
+
+# Affiche le nombre de seeders/leechers sur la fiche torrent, obtenu par
+# scrape UDP (BEP 15) des trackers udp:// connus — pas de connexion DHT ni de
+# peer wire protocol, coût réseau négligeable. Les torrents sans tracker udp://
+# n'affichent simplement pas cette information.
+scrape_enabled: true
+scrape_interval_minutes: 30
+scrape_timeout_seconds: 5
+
+# Flux RSS des derniers torrents (/rss.xml), avec un bouton d'accès sur le
+# site. Protection minimale contre l'abus : limite de requêtes par IP,
+# indépendante de celle du reste du site (l'endpoint RSS coûte plus cher
+# qu'une simple page).
+rss_enabled: true
+rss_max_items: 50
+rss_rate_limit_per_minute: 12
